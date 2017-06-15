@@ -1,0 +1,325 @@
+# Advanced JS: PART II
+
+---
+
+## Resources:
+
+**06-PROGRAMMING PARADIGMS:**
+- [EJ: Higher Order Functions](http://eloquentjavascript.net/05_higher_order.html)
+
+- Introduction to Functional Programming
+- Understanding Map
+- Understanding Reduce
+
+**07-PROTOTYPAL INHERITANCE:**
+- [Pass by Reference vs Pass by Value](https://docstore.mik.ua/orelly/webprog/jscript/ch11_02.htm)
+- [.prototype vs proto](https://stackoverflow.com/questions/9959727/proto-vs-prototype-in-javascript)
+- [MDN - Object.create()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+- [Chaining objects prototypes with Object.create()](http://eli.thegreenplace.net/2013/10/22/classical-inheritance-in-javascript-es5)
+- [Object Playground](http://www.objectplayground.com/)
+- [A Plain English Guide to JavaScript Prototypes](http://sporto.github.io/blog/2013/02/22/a-plain-english-guide-to-javascript-prototypes/)
+
+- Constructors within Constructors
+- Object.create and Prototype Chains
+- Prototype Chains & Methods
+
+**08-RECURSION:**
+- [VisuAlgo Recursion Tree](https://visualgo.net/en/recursion?slide=1)
+
+- Introduction to Recursion
+- Recursion and Arrays
+
+---
+
+## 06-PROGRAMMING PARADIGMS
+
+A programming paradigm is a specific style of programming.
+  - C: favors imperative programming
+  - Java: oo programming
+  - JS: multiparadigm language
+
+There are 3 kinds:
+- **imperative:** code read and implemented the way it's written
+- **object-oriented:** code is contained within objects
+- **functional:** uses functions
+
+### 6.4 Functional Programming
+
+Functional programming is characterized by pure, higher-order functions and immutable data. When using functional programming, programs are designed using functions as the primary building blocks instead of using objects to hold state. Functional programming also emphasizes modularity.
+
+Functional programming paradigm emphasizes:
+1- Minimizing pure functions
+
+2- Immutable data
+- new values are computed instead of modifying existing values
+- make a copy of the var and modify that. do not change the original.
+
+3- Functions as values (higher order functions)
+- primary programming constructs are functions
+
+example:
+
+    function forEach(arr, callback) {
+      for (var i = 0; i < arr.length; i++) {
+        callback(arr[i]); // need to pass in an element
+      }                 // this function needs to perform an action on each element
+    }                   // `action` is the function we want to be performed
+
+
+Benefit of writing code in this style:
+- easier to read and understand code through function names
+- we can pass in any function!
+
+**Pure function:** Functions that take in an input and produce an output without affecting global variables or producing side effects (console.log etc...).
+
+**Callbacks:** Functions that are passed into other functions.
+
+instead of having for loops etc all over, put all the code inside functions
+or we can use anonymous functions as the callback! if there's no need to have a name for it:
+
+    forEach(pets, function(pet) {
+      console.log(pet.name);
+    });
+
+### 6.5 Map
+
+Used a lot in functional programming.
+Takes a callback (a function) as its argument.
+Used on an array, returns a NEW array by transforming each element according to the callback.
+The callback takes an element as its argument, returns what the related element should be.
+Easily chainable.
+
+    [2,3,4] => [4,6,8]
+
+    var doubled = [2,3,4].map(function(elem) {
+      return elem * 2;
+    });
+
+    console.log(doubled); //[4,6,8]
+
+### 6.6 Reduce
+
+Related terms: fold, accumulate, or aggregate.
+Takes a collection and reduces it to one thing. Called **reducing a collection.**
+Reduce allows us to loop without writing a loop.
+
+Reduce takes:
+- Callback func
+- Optional: initialValue
+
+* Reduce runs this function for each element in the array.
+
+Callback function has 2 arguments:
+- Accumulated Value (accumulated value returned by last invocation of callback. ie. sum)
+- Current Element
+
+    var myArray = [1,2,3,4,5];
+    var sum = myArray.reduce(addingFunc, 0);
+
+    function addingFunc(sum, curr) {
+      debugger;   // can use debugger here to see how the values change with each loop!
+      return sum + curr;
+    }
+
+**How it works:**
+Instead of adding directly to our sum, reduce expects us to return the value that sum will be in the next loop/traversal. In this way, we accumulate or build up a value in our sum value. Once we’ve looped through all of the elements in the array, the sum variable is returned.
+
+* if initialValue is not defined, accumulated value will equal the element at the first index.
+
+* the initialValue can be an empty array or any other value!
+
+* all functional array methods (filter, map, etc) can be written using reduce!
+
+
+---
+
+## 07-PROTOTYPAL INHERITANCE
+
+[Link to below example.](https://repl.it/HDeM/6)
+
+### 5.3 Constructor function
+
+    var Mammal = function(name) {
+      this.name = name;
+      this.endothermic = true;
+      this.hair = true;
+      this.offspring = [];
+    }
+
+### 5.4-5.5 `new`, `.prototype` property & constructors
+
+**Instance of Mammal CF:**
+
+jason is an instance of Mammal, but Mammal is NOT the prototype of jason.
+`Mammal.prototype` IS the PROTOTYPE of jason. Mammal is the Constructor Function of jason.
+
+    var jason = new Mammal();
+    jason.name    // undefined
+    jason.name = 'Jason';
+    jason.name    // 'Jason'
+    jason instanceof Mammal       // true
+    Mammal.isPrototypeOf(jason)   // false
+    Mammal.prototype.isPrototypeOf(jason)   // true
+    Object.getPrototypeOf(jason) === Mammal.prototype   // true
+
+Initiating karen with its name property:
+
+    var karen = new Mammal('Karen');
+    karen.name    // 'Karen'
+
+Adding a property ONLY to jason:
+(but if you go back and add it in the CF, they will all have it, too.)
+
+    jason.age = 23;
+    karen.age     // undefined
+    Mammal.age    // undefined
+
+    Mammal.age = age;     // can't do this. go back and add it to Mammal constructor function!
+
+    jason.hasOwnProperty('age')     // true
+    jason.hasOwnProperty('name')    // true
+    Mammal.hasOwnProperty('name')   // true
+    Mammal.hasOwnProperty('age')    // false
+
+### 5.6 Adding methods to CF's `.prototype`
+
+This will allow the instances to also reach that method. Since the instances' internal prototype (`__proto__`) is the `.prototype` of the CF.
+
+My understanding: we could also add the function as a property to Mammal, and still call it on the instances (would become a direct property of the instance as well), but we're adding it to the `.prototype` property for encapsulation reasons. so that everything that's common among the objects are encapsulated.
+
+    Mammal.prototype.sayHello = function() {
+      return 'Hello!';
+    }
+
+Instances have access to methods on CF's .prototype:
+(we can add and update these whenever and it'll be add/modified on the instances as well!)
+
+    jason.sayHello()    // 'Hello!'
+    karen.sayHello()    // 'Hello!'
+
+### 5.7 Nested Constructors
+
+Using .call method to create another CF with one CF's properties:
+- In Animal, pass in as argument what you'd pass in to Mammal.
+- Instead of c/ping all of Mammal's properties and methods, use `.call` method.
+- The call method assigns `this` to the first argument passed into it. Here, this is Animal.
+
+    var Human = function(name) {
+      Mammal.call(this, name);
+      this.isHuman = true;  // property only belongs to Human CF
+    }
+
+    var cara = new Human('Cara');
+    cara    // >> Human {name: "Cara", endothermic: true, hair: true, offspring: Array(0), isHuman: true}
+
+tada!
+
+    cara instanceof Human   // true
+    cara instanceof Mammal  // false
+    Object.getPrototypeOf(cara) === Human.prototype;    // true
+    cara.__proto__ === Human.prototype;   // true
+    cara.isHuman;   // true
+    cara.name;      // 'Cara'
+    cara.sayHello();  // error!
+
+Problem: `Mammal.prototype` is nowhere in our `Human`'s prototype chain!
+
+    Human instanceof Mammal;   // false
+    Human.prototype === Mammal.prototype;   // false
+    Object.getPrototypeOf(Human) === Mammal.prototype;    // false
+
+### 5.8 Intro to `Object.create()`
+
+`Object.create()` DONE NOT create an instance.
+
+    var jordan = Object.create(Mammal);
+    jordan instanceof Mammal;     // false
+
+**important:** `Object.create()` creates a brand new object, and the internal prototype of the object created is linked to whatever was passed in as an argument.
+
+We want `Human.prototype` to be linked to `Mammal.prototype`.
+We could link `Human.prototype` to an instance of Mammal. However, then all of the direct properties of Mammal also come. We only want the `Mammal.prototype`.
+
+My understanding: Also, we still want to keep Human.prototype. We will create a new object inside it and link the internal prototype of that object to Mammal.prototype.
+
+    Human.prototype = Object.create(Mammal.prototype);
+
+This creates a brand new object. That object's internal prototype points to `Mammal.prototype`. So now we have all the methods on Mammal.prototype.
+
+    Human instanceof Mammal;    // false
+    Human.prototype instanceof Mammal;   // true ??????? an empty instance of Mammal.
+    Human.prototype === karen;    // false
+    Human.prototype === Mammal.prototype;   // false. it's the internal prototype that's linked!
+    Object.getPrototypeOf(Human.prototype) === Mammal.prototype;   // true
+    Human.prototype.__proto__ === Mammal.prototype;    // true
+    Mammal.prototype.isPrototypeOf(Human.prototype)   // true
+    Mammal.isPrototypeOf(Human.prototype)   // false
+
+    cara.sayHello();
+    // this still doesn't work since we created the instance before setting the prototypes
+    var lucy = new Human('Lucy');
+    lucy.sayHello();    // 'Hello!'
+
+problem: but now we're missing the `.contructor` on Human.prototype. this should link back to the Mammal constructor function.
+
+    Mammal.prototype;   // has sayHello(), constructor (links to CF), and __proto__
+    Human.prototype;    // returns {}. (only has __proto__. no constructor!)
+
+    Human.prototype.constructor = Mammal;
+    Human.prototype;    // >> Mammal {constructor: function}
+
+### 5.9 Prototype methods
+
+**Adding custom methods on just the Human CF:**
+
+    Human.prototype.love = function() {
+      return 'I love you.';
+    }
+
+    lucy.love();    // 'I love you.'
+    jason.love();   // Error.
+
+
+---
+
+## 08-RECURSION
+
+### 6.7 Intro to Recursion
+
+A recursive func has 2 parts:
+1- **Base case:** Defines the condition when the function should no longer call itself.
+2- **Recursive case:** Calls the function recursively, altering the arguments so that you get closer to the base case.
+
+If there's no base case: 'stack overflow' error.
+
+Often, the base case will represent the simplest or most basic call of the function--when no recursion is needed and the return value is known immediately.
+
+    function repeat(str, num) {
+      if(!num) {
+        return '';
+      }
+      else {
+        return str + repeat(str, num-1)
+      }
+    }
+    //repeat('hello', 3) => 'hellohellohello'
+
+base case: when `num === 0`
+
+* Anything you can do with a loop, you can also do with recursion.
+
+
+### 6.8 Recursion and Arrays
+
+[Link to Repl.it file](https://repl.it/Ig6s/7)
+
+Rules to keep in mind:
+- Do not create global vars whenever possible.
+- Keep parameters to a minimum (do not add extraneous parameters)
+- Do not modify the original array. (ie. use slice instead of shift)
+
+* Need to use recursion if we don't know how deep the nested array is.
+
+
+---
+

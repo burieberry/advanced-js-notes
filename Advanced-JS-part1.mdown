@@ -1,0 +1,448 @@
+# Advanced JS: PART I
+
+---
+
+**Useful console commands:**
+
+`dir(obj);`: deep inspect. returns all properties of obj
+`func.toString();`: returns the body of the func
+`typeof obj`: to check the data type
+`obj.hasOwnProperty(key)`: only the direct properties
+`obj.isPrototypeOf(anotherObj)`: true/false. same as calling `instanceof`.
+`anotherObj instanceof obj`: true/false
+
+`Object.getOwnPropertyNames(String.prototype)`: prints all properties in array format
+`Object.keys(obj)`: converts the keys in an object into an array
+`Object.getPrototypeOf(obj)`: returns prototype
+
+---
+
+## Resources:
+
+**00-READING TEST SPECS:**
+- [Jasmine doc](https://jasmine.github.io/2.0/introduction.html)
+
+**01-OBJECT PROPERTIES:**
+- [MDN - Built-in Objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects)
+- [History of typeof null](http://2ality.com/2013/10/typeof-null.html)
+- [CS: Ocean of Objects](https://www.codeschool.com/courses/javascript-road-trip-part-3)
+- [EJ: Ch.4: Data Structures: Objects and Arrays](http://eloquentjavascript.net/04_data.html)
+
+- Introduction to Data Types
+- Objects and Object Properties
+  -- proto vs .prototype
+
+**02-FACTORY FUNCTIONS:**
+[MDN - "this"](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+
+- What is 'this'
+- Misconceptions of 'this'
+- Call site and execution context
+- Rule 1: Default Binding
+- Rule 2: Implicit Binding
+
+**03-CONSTRUCTOR FUNCTIONS:**
+- [Constructor Function Mini-Lesson](https://www.youtube.com/watch?v=bDCLUIQx2qU&feature=youtu.be&t=12m25s)
+- [What is Postfix evaluation?](http://scriptasylum.com/tutorials/infix_postfix/algorithms/postfix-evaluation/)
+- [EJ: The Secret Life Of Objects](http://eloquentjavascript.net/06_object.html)
+- [CS: Plains of Prototypes](https://www.codeschool.com/courses/javascript-road-trip-part-3)
+
+- proto vs `.prototype`
+- Constructor Functions Overview
+- `new` keyword
+- prototype Property & Constructors
+- Adding Methods to .prototype
+- Rule 4: Binding 'this' using the new keyword
+
+**04-ALL ABOUT LOOPS:**
+- [EJ: Control Flow](http://eloquentjavascript.net/02_program_structure.html#p_t55fBgZ9ww)
+- [CS: The Labyrinth of Loops](http://javascript-roadtrip-part2.codeschool.com/levels/1)
+
+- For Loops
+- Traversing Objects
+
+**05-FUNCTIONS & CLOSURE:**
+- [MDN - Arguments object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
+- [Scope and this in JS](http://javascriptplayground.com/blog/2012/04/javascript-variable-scope-this/)
+- [Scope & Hoisting](https://pusher.com/sessions/meetup/london-node-user-group/ace-javascript-interviews-scoping-and-hoisting)
+- [EJ: Higher Order Functions](http://eloquentjavascript.net/05_higher_order.html)
+- [CS: JS Roadtrip PT 2 - Problem Solving With Functions](https://www.codeschool.com/courses/javascript-road-trip-part-2/enroll)
+- [CS: JS Roadtrip PT 3 - Forest Of Function Expressions](http://javascript-roadtrip-part3.codeschool.com/levels/1)
+- [CS: Closure](https://www.codeschool.com/courses/javascript-road-trip-part-3/enroll)
+
+- Dive into Functions
+- Function Arguments Keyword
+- Higher Order Functions
+- Introduction to Scope
+- Nested Functions & Closure
+- Introduction Closure
+- Explicit Binding Rule
+
+---
+
+## 00-READING TEST SPECS
+
+### TDD (Test-Driven Development)
+
+In TDD, write tests first, and then write the code that passes the tests.
+**Test spec:** an individual test
+**Expected value:** the result the code should produce
+
+---
+
+## 01-OBJECT PROPERTIES
+
+Functions and Arrays (as well as Errors, Dates, etc) are special types of objects that are created using functions that are built into the JavaScript environment. Like normal objects, they are also able to hold any number of arbitrary properties.
+
+### 1.1 Intro to Data Types
+
+**1- Primitive data types:**
+- string, number, boolean, null, undefined, symbol (JS6)
+- immutable (ie. can't change an index of a string)
+- passed by value (when a variable's value is changed, the copy of that variable's value remains the same)
+
+**2- Complex (Composite) data types:**
+- Objects (Arrays, Functions, Dates, Errors, etc.)
+- mutable (ie. can edit array to change one of the items)
+- passed by reference (when you change the value of an object, it changes value for any object also referencing that value)
+
+**`typeof`:**
+-`typeof null` returns 'object'! (that's wrong but can't change it)
+This is a known bug in JavaScript dating back to when the language was first invented and hasn't been fixed because doing so would break the internet.
+-`typeof <array>`: 'object'
+-`typeof <function>`: 'function' even though functions are also objects
+* difference between function object and other objects: functions are invokable.
+
+**`.prototype` property of functions:**
+- functions have a unique property `prototype` that is different than the internal prototype `__proto__` all objects have.
+
+### 1.2 Objects and Object Properties
+
+Objects are an unordered collection of properties.
+(Arrays are ordered.)
+
+**Object Properties:**
+- Each property consists of a _key_ and associated _value_ pair.
+- In JS the key is called a "property." It accesses and stores values.
+- Property values are accessed/stored using dot or bracket notation:
+
+    var myObj = {name: 'Burcu'};
+    myObj.name  // OK. returns 'Burcu'
+
+    var key = 'name';
+    myObj.key   // NO. can't access variables using dot notation!
+    // instead use: myObj[key]
+
+### 1.3 Type Coercion
+
+**Coverted to String:**
+
+    'a' + 5         // returns 'a5'
+    'a' + [1,2,3]   // 'a1,2,3'
+    4 + [1,2,3]     // '41,2,3'
+    '5' + true      // '5true'
+
+**Converted to Number:**
+
+    5 + true    // 6 (`true` equals 1)
+    5 + false   // 5
+
+**NaN:**
+`NaN` means it isn't a number. its type is Number, though.
+`5 + undefined` // returns `NaN`
+
+**Equal vs. Deep Equal:**
+
+    4 == '4'    // true
+    4 === '4'   // false
+    true == 1   // true
+    true === 1  // false
+
+// Deep equal takes type into account.
+
+    var obj = {}
+    var obj1 = {}
+    obj == obj1   // false
+    obj === obj1  // false
+
+    var obj2 = obj1
+    obj2 == obj1  // returns true. Now they reference the same location in memory.
+
+- Reason: obj and obj1 are references to different objects in the memory! Even if they are identical in value.
+
+- Variables don't hold the value of an object but a reference to an object.
+
+- `[] == []`  // false
+
+- `if(value)` is the same as writing `if(value == true)`
+
+**Truthy vs Falsy**
+In general, truthy values exist.
+- falsy: 0, false, null, undefined, `''` (empty string), NaN
+- truthy: `[]`, `{}` (empty array or obj is considered truthy!)
+- Objects are always considered truthy
+
+// Use `!!` to convert a value to its boolean representation!
+ie. `!!'hello'` returns true
+
+---
+
+## 02-FACTORY FUNCTIONS
+
+Instead of passing a function an object to add properties to the object, you will create a function (without passing an object to it as an argument) that returns an object with properties. These properties can be of any JavaScript type including functions! The function will create the object and return the object.
+
+- A type of function that returns an object with properties.
+- Called "factory function" because function acts as a factory for making a certain pattern of object.
+- Can use the `this` keyword to reference the object that specs and methods belong to.
+
+---
+
+## 03-CONSTRUCTOR FUNCTIONS
+
+Another way of creating a custom object. "Constructor Functions" create new objects when invoked with the `new` operator and assign the internal prototype of the new object to the Constructor Function's `.prototype` object.
+
+- if create an instance of a function object using the `new` keyword, the instance's internal prototype (`__proto__`) will equal the `.prototype` property of the prototype.
+
+- so you can make one object access the methods of another object by setting the internal prototype of the first obj equal to the `.prototype` property of the second obj
+
+- can use `instanceOf` function to check if one is the prototype of the other
+- using the `new` keyword creates the instances
+
+---
+
+## 04-ALL ABOUT LOOPS
+
+Loops repeat a task until a conditional expression evaluates to false.
+- A loop has: Initial Value, Loop Body, Conditional Expression, Counter.
+- `for` loop to traverse arrays, `for in` loop for an object's keys and values.
+- Nested loops.
+
+### 1.4 For Loop
+
+**`for` loop:**
+- can have multiple counters
+- can decrement instead of increment
+- need nested `for` loops to traverse nested arrays:
+
+    var nestedArr = [[1,2,3],0,[4,5,6],10,[7,8,9]];
+    for(var outer = 0; outer < nestedArr.length; outer++) {
+      if(Array.isArray(nestedArr[outer])) {
+        for(var inner = 0; inner < nestedArr[outer].length; inner++) {
+          console.log(nestedArr[outer][inner]);
+        }
+      } else {
+        console.log(nestedArr[outer]);
+      }
+    }
+
+-(not recommended) can also use a string or an array as the counter
+
+    for(var str = ''; str.length < 10; str += 'x') {
+      console.log(str);
+    }
+
+    for(var arr = []; arr.length < 10; arr.push('x')) {
+      console.log(arr);
+    }
+
+### 1.5 Traversing Objects
+
+**`for in` loop:**
+- `for` loops not useful when looping through objects, use `for in` loop:
+
+    var person = {
+      name: 'karley',
+      age: 23,
+      hairColor: 'auburn'
+    };
+
+    for(var key in person) {
+      console.log(key);           // name, age, hairColor
+      console.log(person[key]);   // karley, 23, auburn
+    }
+
+-issues with this: results can be unordered (objects are by definition unordered structures), and prototype methods will also be looped
+
+**`hasOwnProperty(key)` method:**
+- if only want the direct properties to be looped
+- this method is used on an instance of an object and takes a key name as its parameter
+
+**`Object.keys(obj)` method:**
+- converts the keys in an object into an array!
+- now we can use all array methods & arrays are ordered structures
+- this is a class method (not an instance method like `hasOwnProperty`)
+
+    var keyArray = Object.keys(person);    // ['name', 'age', 'hairColor']
+
+    var valueArray = keyArray.map(function(key) {
+        return person[key];
+    });
+    // ['karley', 23, 'auburn']
+
+
+    for(var i = 0; i < keyArray.length; i++) {
+      console.log(person[keyArray[i]]);
+    }
+    // karley, 23, auburn
+
+**NOTE:**
+- Arrays: DO NOT use `for in` loops with arrays (use `for` loops, array methods)
+- Objects: Use `for in` loops or `Object.keys()`
+
+### 1.6 Built-in Objects
+
+They are on the global scope of the JS environment.
+Commonly used built-in objects are Object, String, Array, Function, Math, Date, and Error. Each of these houses a myriad of methods that can be used upon objects of that type.
+
+- `Object` class is the parent of all objects. All others inherit its built-in methods.
+It's capitalized because it's a class. All its methods are class methods.
+- Each object has their own built-in methods.
+- Can inspect an obj's properties on the console. Example:
+    `String.prototype` or `Object.getOwnPropertyNames(String.prototype)`
+    `Object.getOwnPropertyNames(Array.prototype)`
+
+---
+
+## 05-FUNCTIONS & CLOSURE
+
+### 6.1 Dive Into Functions
+
+Functions are special types of objects. So, we can assign properties to them.
+They are "callable" objects.
+
+    typeof function() {};   // returns function (not object!)
+    typeof array            // returns object (since it's not callable)
+
+They have more properties than what we can see.
+Can use `Object.getOwnPropertyNames()` to see all of them.
+
+**Properties of functions:**
+- Functions are values and can be held by a variable
+- Functions can have properties
+- Functions have an internal prototype (_proto_) property which inherits from Function
+
+**Built-in Function Properties:**
+1- `length`:
+    - this refers a function's _arity_ (the # of argument a function takes)
+    - determined by the function's definition, rather than by its invocation
+    (can put as many parameters as we want when invoking, they may not be all read)
+
+2- `name`:
+    - returns the name of the "named function" (name given after the `function` keyword)
+    - however if a function is not defined and is held in a var, this property will return the name of the variable holding that function
+
+3- `arguments`
+
+4- `caller`:
+    - which function called this function
+    - refer to the scope in which the function is invoked
+    - if invoked from global scope, will return `null`
+
+      var callMyFunction = function hello() {
+        myFunction('hello');
+      }
+      console.log(callMyFunction.length)  // 0
+      console.log(callMyFunction.name)    // hello
+
+5- `.prototype`:
+    - only functions have this property
+    - `Object.getPrototypeOf(func.prototype)`:
+    length, name, arguments, caller, apply, bind, call, toString, constructor
+    (these methods are available to any function)
+
+- The prototype property is used to specify what properties and methods objects should be inherited by an object created by a constructor function.
+(specifies what the "instance" should inherit)
+
+`__proto__`: the internal prototype
+- "__" means it's internal (won't appear when you call all its keys)
+- points to whatever it inherits from
+- not good to use `__proto__`, use `Object.getPrototypeOf(obj)` instead.
+- `Object.getPrototypeOf(obj)` returns the prototype obj inherits from (same as `__proto__`!)
+- all objects have this internal prototype
+
+### 6.2 Function `arguments` Keyword
+
+JavaScript functions all have a built-in object called `arguments`. `arguments` is what is called and 'array-like object' because it's an object with numeric keys that can be looped over as if it were an array. However, since it is not actually an array, it does not inherit from the `Array.prototype`. Therefore, arguments does not have access to useful Array methods such as `.forEach`.
+
+`arguments` is very useful because it gives the user a collection of all the arguments that the function was called with, regardless of the number of named parameters in the definition.
+
+In order to use Array methods with the arguments object, it must be first converted into a true Array. Once way we can do this is by invoking `Array.prototype.slice` with `call` or `apply`, and then passing in `arguments` as our context (or `this` object).
+
+Since `slice` returns an array, using call to invoke slice on `arguments` creates a copy of arguments that is of type Array. The end result would look like `Array.prototype.slice.call(arguments);`.
+
+**`arguments` keyword:**
+- an array-like object. enumerable. each index is in order.
+- but not an array! has length method but not slice method.
+
+**Invoking more than the required arguments:**
+- can loop over all the arguments passed in when the function was invoked by looping over the arguments variable.
+- this way, even though the arguments were not required (not named parameters) in the func definition can still be used!
+
+**Turning arguments of a function into an array:**
+- ie. to be able to use array methods
+
+    var argArray = Array.prototype.slice.call(arguments, 1);
+    // to be able to get results for arguments.slice(1);
+    // call method: first parameter defines the 'this' keyword the called function should attach to. the remaining parameters are the parameters that go inside the function.
+
+* to create an exact copy of the functions arguments in an array form, use:
+`Array.prototype.slice.call(arguments)` (because slice method always returns an array.)
+
+**Passing in arguments as an argument to the function:**
+- This will override the arguments keyword. don't do this.
+- It will create a variable called arguments in this scope.
+
+### 6.3 Higher-order Functions
+
+Takes in a function as an argument and/or returns a function.
+
+To invoke a function within a function, use 2 sets of parantheses:
+
+    var createsAFunc = function() {
+      var newFunc = function(message) {
+        console.log('Message: ', message);
+      }
+      return newFunc;
+    }
+
+    createsAFunc()('Hello');   // Message: Hello
+
+You can pass in another function as an argument, even the function definition directly as an argument.
+
+**Decorating a function:**
+Give a function in as an argument, return a new version of the function which is basically a copy of the function and something added to it.
+
+    var decorator = function(func) {
+      return function() {
+        console.log('Decorated function!'); // this is the different part
+        func();   // runs the function given as an argument in here
+      }
+    }
+
+    var decorated = decorator(function() {console.log('Hello')});
+    // output:
+    // Decorated function!
+    // Hello
+
+This allows us to create modifications of existing functionality.
+
+### 4.1 Intro to Scope
+
+**Scope:**
+- What values your program has access to.
+- Can be determined _lexically_ (based on physical location in your program)
+- Two types:
+**1- Function (Local) Scope**
+**2- Global Scope**
+
+### 4.2 Nested Functions & Closures
+
+**`debugger;` keyword:**
+- add this inside a function and ran on the console, this will show the scopes and vars inside the scopes!
+
+### 4.3 Intro to Closure
+
+**Closure:**
+- Variables are used locally but defined in an enclosing scope.
+- They remember the environment in which they were created.
+- ie. If a function is created inside another function, but used by itself outside of it, it will still have access to the variables created in the other function!

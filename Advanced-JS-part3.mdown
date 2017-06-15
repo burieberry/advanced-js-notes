@@ -1,0 +1,138 @@
+# Advanced JS: PART III
+
+---
+
+## Resources:
+
+---
+
+### 2.1 Execution Context
+
+A record of information when your code is running. When a code runs, execution contexts are created.
+
+**Information Stored in Execution Context:**
+- WHERE a func is called from (the call-stack)
+- HOW the func is invoked (`Function.prototype.call`, as a method, etc)
+- The `Scope Chain`
+- The value of the `this` keyword
+- Variables and argument access
+- And more.
+
+**3 types of executable code:**
+(that will create an execution context when executed)
+1- Global Code
+
+- any code not wrapped in a function
+- in browsers, code in `<script>`
+
+2- Function code
+
+- any code executed within a function
+- in browsers, event attributes such as `onclick` are treated as Function code.
+
+3- [Eval code](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval)
+
+### 2.2 Global Execution Context
+
+2 values:
+- Global object (`window` in browser, `global` in node.js)
+- `this` keyword: its value changes based on execution context
+
+### 2.3 Phase 1: "Creation" Phase
+
+Execution context is created in 2 phases: Creation Phase, Execution Phase
+
+**Creation Phase:**
+- Locates `function` declarations and adds them to the program's memory
+- Locates `variable` declarations and adds them to the program's memory (the value of the variable is not assigned)
+- The `this` keyword is assigned a value
+
+### 2.4 Phase 2: "Execution" Phase
+
+Execute each line of code, line by line.
+Values are assigned to variables created in the previous phase.
+
+### 2.5 Function Execution Context
+
+- A function execution context is created each time a function is invoked!
+- Function execution contexts also have a creation phase & an execution phase.
+- The `this` keyword is created and assigned a value.
+
+Main difference between the global execution context and a function's execution context:
+- Function's execution context has a reference to a _scope chain_.
+- Global exec context has a global obj created.
+
+**Scope chain:**
+- A reference to the variables defined outside of the function's code block.
+- Scope is created when the execution context is created.
+
+### 2.6 Call Stack Basics
+
+JS is single-threaded: it can only execute one task at a time.
+- To manage one task at a time, JavaScript uses the **Call Stack**.
+- The Call Stack is a last in first out data structure that determines what to execute and when.
+
+Each function is added to the call stack when it is executed. After a function completes its execution it is removed from the call stack.
+
+---
+
+### 3. `this` keyword
+
+Determined by a function's execution context. (how a func is called) Check the call site!
+
+`this` can refer to:
+- The Global Object
+- An instance of a Constructor Function
+- An object a method is attached to
+- A specific Object (you can instruct this to be the exact object you want it to be)
+
+`this` is **NOT**:
+- itself
+- a function's scope
+
+### JS has 4 different ways you can invoke a function:
+
+- Function Invocation: `alert("TGIF!");`
+- Method Invocation: `[].push("Fullstack", "Academy");`
+- Constructor Function Invocation: `new RegExp("[a-zA-Z]");`
+- Indirect Invocation: `Object.prototype.toString.call([]);`
+
+**1- Default Binding Rule**
+`this`: global obj
+- if `this` is used in global space
+- OR, if a function is invoked on its own
+
+**2- Implicit Binding Rule (aka Method Invocation Rule)**
+`this`: to the left of the dot operator
+
+**3- Explicit Binding Rule:**
+When a `.call`, `.apply`, or `.bind` is used.
+- Allows us to explicitly assign what `this` should reference.
+
+**4- `new` Binding Rule:**
+When `new` is used.
+
+---
+
+Example:
+
+    var fullName = "Nimit Maru";
+
+    var myObj = {
+      fullName: "David Yang",
+      property: {
+        fullName: "Omri Bernstein",
+        getFullName: function(){
+          return this.fullName;
+        }
+      }
+    };
+
+    var whosName = myObj.property.getFullName;
+    whosName();     // returns 'Nimit Maru' (this: global obj)
+    myObj.property.getFullName();   // 'Omri Bernstein' (this" myObj.property)
+    myObj.property.getFullName.call(myObj);   // 'David Yang' (this: myObj)
+
+---
+
+
